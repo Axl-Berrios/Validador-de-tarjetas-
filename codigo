@@ -1,0 +1,58 @@
+def luhn_check(card_number):
+    def digits_of(n):
+        return [int(d) for d in str(n)]
+    
+    digits = digits_of(card_number)
+    odd_digits = digits[-1::-2]
+    even_digits = digits[-2::-2]
+    
+    checksum = sum(odd_digits)
+    for d in even_digits:
+        checksum += sum(digits_of(d * 2))
+    
+    return checksum % 10 == 0
+
+def is_valid_credit_card(card_number):
+    # Convierte el número de tarjeta en una cadena para manejar ceros iniciales
+    card_number = str(card_number)
+    # Verificar si todos los caracteres del número de tarjeta son dígitos
+    if not card_number.isdigit():
+        return False
+    # Verifique la longitud del número de tarjeta
+    if len(card_number) < 13 or len(card_number) > 19:
+        return False
+    # Validar el número de tarjeta utilizando el algoritmo de Luhn
+    return luhn_check(card_number)
+
+def get_card_type(card_number):
+    card_number = str(card_number)
+    
+    if card_number.startswith("4"):
+        return "Visa"
+    elif card_number.startswith(("34", "37")):
+        return "American Express"
+    elif card_number.startswith("5") and card_number[1] in "12345":
+        return "MasterCard"
+    elif card_number.startswith("6"):
+        return "Discover"
+    else:
+        return "Unknown"
+
+def validate_and_identify_card(card_number):
+    if is_valid_credit_card(card_number):
+        card_type = get_card_type(card_number)
+        if card_type == "Unknown":
+            return f"El número de tarjeta {card_number} es válido, pero el tipo de tarjeta no es reconocido."
+        else:
+            return f"El número de tarjeta {card_number} es válido y es una tarjeta {card_type}."
+    else:
+        return f"El número de tarjeta {card_number} no es válido."
+
+def main():
+    print("Bienvenido al validador de tarjetas de crédito")
+    card_number = input("Por favor, ingrese el número de tarjeta de crédito: ").strip()
+    result = validate_and_identify_card(card_number)
+    print(result)
+
+if __name__ == "__main__":
+    main()
